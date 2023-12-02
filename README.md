@@ -5,9 +5,9 @@ Professor: Allan dos Santos
 Alunos:
 
 - Guilherme Matheus Alves
-- Josué
-- Lucas
-- Matheus
+- Josué Hass Pereira
+- Lucas Augusto de Oliveira
+- Mateus Alayo Hidalgo Schulz
 
 O objetivo deste trabalho consiste em analisar a complexidade algorítmica das operações de adição e remoção de nós (considerando o balanceamento) em árvores AVL, rubro-negra e B.
 

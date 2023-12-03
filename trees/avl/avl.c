@@ -37,31 +37,7 @@ NoAVL* criarNoAVL(int valor) {
     return no;
 }
 
-NoAVL* adicionarNoAVL(NoAVL* no, int valor) {
-    if (valor > no->valor) {
-        if (no->direita == NULL) {
-            NoAVL* novo = criarNoAVL(valor);
-            novo->pai = no;
-            no->direita = novo;
-				
-            return novo;
-        } else {
-            return adicionarNoAVL(no->direita, valor);
-        }
-    } else {
-        if (no->esquerda == NULL) {
-            NoAVL* novo = criarNoAVL(valor);
-			novo->pai = no;
-			no->esquerda = novo;
-			
-            return novo;
-        } else {
-            return adicionarNoAVL(no->esquerda, valor);
-        }
-    }
-}
-
-NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
+NoAVL* adicionarNoAVL(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
     contadorAVL->operacoes += 1;
     if (valor > no->valor) {
         contadorAVL->operacoes += 1;
@@ -72,7 +48,7 @@ NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 				
             return novo;
         } else {
-            return adicionarNoAVLWithCount(no->direita, valor, contadorAVL);
+            return adicionarNoAVL(no->direita, valor, contadorAVL);
         }
     } else {
         contadorAVL->operacoes += 1;
@@ -83,28 +59,12 @@ NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 			
             return novo;
         } else {
-            return adicionarNoAVLWithCount(no->esquerda, valor, contadorAVL);
+            return adicionarNoAVL(no->esquerda, valor, contadorAVL);
         }
     }
 }
 
-/*
-NoAVL* adicionar(ArvoreAVL* arvore, int valor) {
-    if (arvore->raiz == NULL) {
-        NoAVL* novo = criarNoAVL(valor);
-        arvore->raiz = novo;
-			
-        return novo;
-    } else {
-        NoAVL* no = adicionarNoAVL(arvore->raiz, valor);
-        balanceamento(arvore, no);
-        return no;
-    }
-}
-*/
-
-
-int adicionarWithCount(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
+int inserirNoAVL(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
     contadorAVL->operacoes += 1;
 
     if (arvore->raiz == NULL) {
@@ -114,44 +74,17 @@ int adicionarWithCount(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
         return contadorAVL->operacoes;
     }
     
-    NoAVL* no = adicionarNoAVLWithCount(arvore->raiz, valor, contadorAVL);
-    balanceamentoWithCount(arvore, no, contadorAVL);
+    NoAVL* no = adicionarNoAVL(arvore->raiz, valor, contadorAVL);
+    balanceamentoAVL(arvore, no, contadorAVL);
     return contadorAVL->operacoes;
 }
 
-
-/*
-void balanceamentoWithCount(ArvoreAVL* a, NoAVL* no) {
-    while (no != NULL) {
-        int fator = fb(no);
-
-        if (fator > 1) { //arvore mais profunda a esquerda
-            //rotacao a direita
-            if (fb(no->esquerda) > 0) {
-                rsd(a, no);
-            } else {
-                rdd(a, no);
-            }
-        } else if (fator < -1) {
-            //rotacao a esquerda
-            if (fb(no->direita) < 0) {
-                rse(a, no);
-            } else {
-                rde(a, no);
-            }
-        }
-
-        no = no->pai;
-    }
-}
-*/
-
-void balanceamentoWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
+void balanceamentoAVL(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
     contadorAVL->operacoes += 1;
     while (no != NULL) {
         contadorAVL->operacoes += 1;
 
-        int fator = fb(no, contadorAVL);
+        int fator = fbAVL(no, contadorAVL);
 
         contadorAVL->operacoes += 2;
         if (fator > 1) { //arvore mais profunda a esquerda
@@ -159,19 +92,19 @@ void balanceamentoWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
             
             //rotacao a direita
             contadorAVL->operacoes += 1;
-            if (fb(no->esquerda, contadorAVL) > 0) {
-                rsd(a, no, contadorAVL);
+            if (fbAVL(no->esquerda, contadorAVL) > 0) {
+                rsdAVL(a, no, contadorAVL);
             } else {
-                rdd(a, no, contadorAVL);
+                rddAVL(a, no, contadorAVL);
             }
         } else if (fator < -1) {
             contadorAVL->operacoes -= 1;
             //rotacao a esquerda
             contadorAVL->operacoes += 1;
-            if (fb(no->direita, contadorAVL) < 0) {
-                rse(a, no, contadorAVL);
+            if (fbAVL(no->direita, contadorAVL) < 0) {
+                rseAVL(a, no, contadorAVL);
             } else {
-                rde(a, no, contadorAVL);
+                rdeAVL(a, no, contadorAVL);
             }
         }
         contadorAVL->operacoes -= 2;
@@ -182,17 +115,17 @@ void balanceamentoWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
 
 
 // Não é utilizado nas adições, portanto não precisa de contabilidade
-NoAVL* localizar(NoAVL* no, int valor) {
+NoAVL* localizarAVL(NoAVL* no, int valor) {
     if (no->valor == valor) {
         return no;
     } else {
         if (valor < no->valor) {
             if (no->esquerda != NULL) {
-                return localizar(no->esquerda, valor);
+                return localizarAVL(no->esquerda, valor);
             }
         } else {
             if (no->direita != NULL) {
-                return localizar(no->direita, valor);
+                return localizarAVL(no->direita, valor);
             }
         }
     }
@@ -201,54 +134,54 @@ NoAVL* localizar(NoAVL* no, int valor) {
 }
 
 // Não é utilizado nas adições, portanto não precisa de contabilidade
-void percorrer(NoAVL* no, void (*callback)(int)) {
+void percorrerAVL(NoAVL* no, void (*callback)(int)) {
     if (no != NULL) {
-        percorrer(no->esquerda,callback);
+        percorrerAVL(no->esquerda,callback);
         callback(no->valor);
-        percorrer(no->direita,callback);
+        percorrerAVL(no->direita,callback);
     }
 }
 
 // Não é utilizado nas adições, portanto não precisa de contabilidade
-void visitar(int valor){
+void visitarAVL(int valor){
     printf("%d ", valor);
 }
 
 // É utilizado
-int altura(NoAVL* no, ContadorAVL* contadorAVL){
+int alturaAVL(NoAVL* no, ContadorAVL* contadorAVL){
     int esquerda = 0,direita = 0;
 
     contadorAVL->operacoes += 1;
     if (no->esquerda != NULL) {
-        esquerda = altura(no->esquerda, contadorAVL) + 1;
+        esquerda = alturaAVL(no->esquerda, contadorAVL) + 1;
     }
 
     contadorAVL->operacoes += 1;
     if (no->direita != NULL) {
-        direita = altura(no->direita, contadorAVL) + 1;
+        direita = alturaAVL(no->direita, contadorAVL) + 1;
     }
   
     return esquerda > direita ? esquerda : direita; //max(esquerda,direita)
 }
 
 // É utilizado
-int fb(NoAVL* no, ContadorAVL* contadorAVL) {
+int fbAVL(NoAVL* no, ContadorAVL* contadorAVL) {
     int esquerda = 0,direita = 0;
   
     contadorAVL->operacoes += 1;
     if (no->esquerda != NULL) {
-        esquerda = altura(no->esquerda, contadorAVL) + 1;
+        esquerda = alturaAVL(no->esquerda, contadorAVL) + 1;
     }
 
     contadorAVL->operacoes += 1;
     if (no->direita != NULL) {
-        direita = altura(no->direita, contadorAVL) + 1;
+        direita = alturaAVL(no->direita, contadorAVL) + 1;
     }
   
     return esquerda - direita;
 }
 
-NoAVL* rse(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     NoAVL* pai = no->pai;
     NoAVL* direita = no->direita;
 
@@ -278,7 +211,7 @@ NoAVL* rse(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     return direita;
 }
 
-NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     NoAVL* pai = no->pai;
     NoAVL* esquerda = no->esquerda;
 
@@ -308,12 +241,12 @@ NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     return esquerda;
 }
 
-NoAVL* rde(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
-    no->direita = rsd(arvore, no->direita, contadorAVL);
-    return rse(arvore, no, contadorAVL);
+NoAVL* rdeAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+    no->direita = rsdAVL(arvore, no->direita, contadorAVL);
+    return rseAVL(arvore, no, contadorAVL);
 }
 
-NoAVL* rdd(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
-    no->esquerda = rse(arvore, no->esquerda, contadorAVL);
-    return rsd(arvore, no, contadorAVL);
+NoAVL* rddAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+    no->esquerda = rseAVL(arvore, no->esquerda, contadorAVL);
+    return rsdAVL(arvore, no, contadorAVL);
 }

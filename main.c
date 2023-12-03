@@ -1,10 +1,9 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "trees/avl/avl.h"
-#include "trees/b/b.h"
-#include "trees/redblack/redblack.h"
+//#include "trees/b/b.h"
+//#include "trees/redblack/redblack.h"
 
 /*
 Trabalho final de PRA
@@ -45,14 +44,34 @@ para cada estrutura de dados avaliada (árvore AVL, rubro-negra e as três varia
 
 
 int analiseArvoreAVL() {
+    /*
     ArvoreAVL* arvoreAVL[NUM_CONJUNTOS];
 
     for (int i = 0; i < NUM_CONJUNTOS; i++)
         arvoreAVL[i] = criarAVL();
-
+    */
     
 
+    printf("Iniciou");
+
+    ArvoreAVL* arvoreAVL; // = criarAVL();
     
+    printf("Criou");
+
+
+
+    int qtd_operacoes = 0;
+
+    for (int i = 0; i < 10; i ++) {
+        arvoreAVL = criarAVL();
+        qtd_operacoes = 0;
+        for (int j = 0; j < i; j++)
+            qtd_operacoes += adicionarWithCount(arvoreAVL, i, arvoreAVL->contadorAVL);
+        printf("%i;", qtd_operacoes);
+        free(arvoreAVL);
+    }
+
+    return 0;    
 }
 
 int analiseArvoreRB() {
@@ -66,4 +85,5 @@ int analiseArvoreB(int ordem) {
 
 int main() {
 
+    
 }

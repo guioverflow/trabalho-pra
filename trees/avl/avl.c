@@ -37,7 +37,7 @@ NoAVL* criarNoAVL(int valor) {
     return no;
 }
 
-NoAVL* adicionarNoAVL(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
+NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
     contadorAVL->operacoes += 1;
     if (valor > no->valor) {
         contadorAVL->operacoes += 1;
@@ -48,7 +48,7 @@ NoAVL* adicionarNoAVL(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 				
             return novo;
         } else {
-            return adicionarNoAVL(no->direita, valor, contadorAVL);
+            return adicionarNoAVLWithCount(no->direita, valor, contadorAVL);
         }
     } else {
         contadorAVL->operacoes += 1;
@@ -59,7 +59,7 @@ NoAVL* adicionarNoAVL(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 			
             return novo;
         } else {
-            return adicionarNoAVL(no->esquerda, valor, contadorAVL);
+            return adicionarNoAVLWithCount(no->esquerda, valor, contadorAVL);
         }
     }
 }
@@ -74,12 +74,12 @@ int inserirNoAVL(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
         return contadorAVL->operacoes;
     }
     
-    NoAVL* no = adicionarNoAVL(arvore->raiz, valor, contadorAVL);
+    NoAVL* no = adicionarNoAVLWithCount(arvore->raiz, valor, contadorAVL);
     balanceamentoAVL(arvore, no, contadorAVL);
     return contadorAVL->operacoes;
 }
 
-void balanceamentoAVL(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
+void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
     contadorAVL->operacoes += 1;
     while (no != NULL) {
         contadorAVL->operacoes += 1;
@@ -113,6 +113,61 @@ void balanceamentoAVL(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
     }
 }
 
+// implementar contador;
+NoAVL* encontrarMinimo(NoAVL* no) {
+    while (no->esquerda != NULL) {
+        no = no->esquerda;
+    }
+    return no;
+}
+
+// implementar contador
+NoAVL *removeNoAVL(NoAVL *no, int valor) {
+  // Find the node and delete it
+  if (no == NULL)
+    return no;
+
+  if (valor < no->valor)
+    no->esquerda = deleteNode(no->esquerda, valor);
+
+  else if (valor > no->valor)
+    no->direita = deleteNode(no->direita, valor);
+
+  else {
+    if ((no->esquerda == NULL) || (no->direita == NULL)) {
+      NoAVL *temp = no->esquerda ? no->esquerda : no->direita;
+
+      if (temp == NULL) {
+        temp = no;
+        no = NULL;
+      } else
+        *no = *temp;
+      free(temp);
+    } else {
+      NoAVL *temp = encontrarMinimo(no->direita);
+
+      no->valor = temp->valor;
+
+      no->direita = deleteNode(no->direita, temp->valor);
+    }
+  }
+
+  if (no == NULL)
+    return no;
+
+  return no;
+}
+
+// implementar contador
+NoAVL* remover(ArvoreAVL* arvore, int valor){
+    if (arvore == NULL || arvore->raiz == NULL) {
+        return NULL;
+    }
+    NoAVL* noParaBalancear = deleteNode(arvore->raiz, valor/* , contadorAVL */);
+
+    balanceamento(arvore, noParaBalancear/* , contadorAVL */);
+    return noParaBalancear;
+}
 
 // Não é utilizado nas adições, portanto não precisa de contabilidade
 NoAVL* localizarAVL(NoAVL* no, int valor) {

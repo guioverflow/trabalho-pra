@@ -224,6 +224,159 @@ void rotacionarDireita(Arvore* arvore, No* no) {
     no->pai = esquerda;
 }
 
+void exibirArvore(No* no, int nivel) {
+    if (no != NULL) {
+        exibirArvore(no->direita, nivel + 1);
+
+        for (int i = 0; i < nivel; i++) {
+            printf("   ");
+        }
+
+        if (no->cor == Vermelho) {
+            printf("|--[%d] (Vermelho)\n", no->valor);
+        } else {
+            printf("|--[%d] (Preto)\n", no->valor);
+        }
+
+        exibirArvore(no->esquerda, nivel + 1);
+    }
+}
+
+void exibirArvoreRubroNegra(Arvore* arvore) {
+    printf("Árvore Rubro-Negra:\n");
+    exibirArvore(arvore->raiz, 0);
+}
+
+
+No* encontrarMinimo(Arvore* arvore, No* no) {
+    while (no->esquerda != arvore->nulo) {
+        no = no->esquerda;
+    }
+    return no;
+}
+
+void trocarNos(Arvore* arvore, No* no1, No* no2) {
+    if (no1->pai == arvore->nulo) {
+        arvore->raiz = no2;
+    } else if (no1 == no1->pai->esquerda) {
+        no1->pai->esquerda = no2;
+    } else {
+        no1->pai->direita = no2;
+    }
+    no2->pai = no1->pai;
+}
+
+
+void balancearRemocao(Arvore* arvore, No* no) {
+    while (no != arvore->raiz && no->cor == Preto) {
+        if (no == no->pai->esquerda) {
+            No* irmao = no->pai->direita;
+
+            if (irmao->cor == Vermelho) {
+                irmao->cor = Preto;
+                no->pai->cor = Vermelho;
+                rotacionarEsquerda(arvore, no->pai);
+                irmao = no->pai->direita;
+            }
+
+            if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
+                irmao->cor = Vermelho;
+                no = no->pai;
+            } else {
+                if (irmao->direita->cor == Preto) {
+                    irmao->esquerda->cor = Preto;
+                    irmao->cor = Vermelho;
+                    rotacionarDireita(arvore, irmao);
+                    irmao = no->pai->direita;
+                }
+
+                irmao->cor = no->pai->cor;
+                no->pai->cor = Preto;
+                irmao->direita->cor = Preto;
+                rotacionarEsquerda(arvore, no->pai);
+                no = arvore->raiz; // Para sair do loop
+            }
+        } else {
+            // Simétrico ao caso acima (esquerda e direita trocados)
+            No* irmao = no->pai->esquerda;
+
+            if (irmao->cor == Vermelho) {
+                irmao->cor = Preto;
+                no->pai->cor = Vermelho;
+                rotacionarDireita(arvore, no->pai);
+                irmao = no->pai->esquerda;
+            }
+
+            if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
+                irmao->cor = Vermelho;
+                no = no->pai;
+            } else {
+                if (irmao->esquerda->cor == Preto) {
+                    irmao->direita->cor = Preto;
+                    irmao->cor = Vermelho;
+                    rotacionarEsquerda(arvore, irmao);
+                    irmao = no->pai->esquerda;
+                }
+
+                irmao->cor = no->pai->cor;
+                no->pai->cor = Preto;
+                irmao->esquerda->cor = Preto;
+                rotacionarDireita(arvore, no->pai);
+                no = arvore->raiz; // Para sair do loop
+            }
+        }
+    }
+
+    no->cor = Preto;
+}
+
+void remover(Arvore* arvore, int valor) {
+    No* no = localizar(arvore, valor);
+
+    if (no == NULL) {
+        printf("Valor não encontrado na árvore.\n");
+        return;
+    }
+
+    No* noRemover = no;
+    Cor corOriginal = noRemover->cor;
+    No* noSubstituto;
+
+    if (no->esquerda == arvore->nulo) {
+        noSubstituto = no->direita;
+        trocarNos(arvore, no, no->direita);
+    } else if (no->direita == arvore->nulo) {
+        noSubstituto = no->esquerda;
+        trocarNos(arvore, no, no->esquerda);
+    } else {
+        noRemover = encontrarMinimo(arvore, no->direita);
+        corOriginal = noRemover->cor;
+        noSubstituto = noRemover->direita;
+
+        if (noRemover->pai == no) {
+            noSubstituto->pai = noRemover;
+        } else {
+            trocarNos(arvore, noRemover, noRemover->direita);
+            noRemover->direita = no->direita;
+            noRemover->direita->pai = noRemover;
+        }
+
+        trocarNos(arvore, no, noRemover);
+        noRemover->esquerda = no->esquerda;
+        noRemover->esquerda->pai = noRemover;
+        noRemover->cor = no->cor;
+    }
+
+    free(no);
+
+    if (corOriginal == Preto) {
+        // Rebalancear a árvore após a remoção
+        if (noSubstituto != arvore->nulo) {
+            balancearRemocao(arvore, noSubstituto);
+        }
+    }
+}
+
 /*
 int main() {
     Arvore* a = criar();

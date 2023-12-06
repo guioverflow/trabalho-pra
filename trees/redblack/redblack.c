@@ -277,19 +277,15 @@ void balancearRemocao(Arvore* arvore, No* no) {
                 no->pai->cor = Vermelho;
                 rotacionarEsquerda(arvore, no->pai);
                 irmao = no->pai->direita;
-            }
-
-            if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
+            }else if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
                 irmao->cor = Vermelho;
                 no = no->pai;
-            } else {
-                if (irmao->direita->cor == Preto) {
+            } else if (irmao->direita->cor == Preto) {
                     irmao->esquerda->cor = Preto;
                     irmao->cor = Vermelho;
                     rotacionarDireita(arvore, irmao);
                     irmao = no->pai->direita;
-                }
-
+            }else{
                 irmao->cor = no->pai->cor;
                 no->pai->cor = Preto;
                 irmao->direita->cor = Preto;
@@ -305,24 +301,20 @@ void balancearRemocao(Arvore* arvore, No* no) {
                 no->pai->cor = Vermelho;
                 rotacionarDireita(arvore, no->pai);
                 irmao = no->pai->esquerda;
-            }
-
-            if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
+            }else if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
                 irmao->cor = Vermelho;
                 no = no->pai;
-            } else {
-                if (irmao->esquerda->cor == Preto) {
+            } else if (irmao->esquerda->cor == Preto) {
                     irmao->direita->cor = Preto;
                     irmao->cor = Vermelho;
                     rotacionarEsquerda(arvore, irmao);
                     irmao = no->pai->esquerda;
-                }
-
-                irmao->cor = no->pai->cor;
-                no->pai->cor = Preto;
-                irmao->esquerda->cor = Preto;
-                rotacionarDireita(arvore, no->pai);
-                no = arvore->raiz; // Para sair do loop
+            } else{
+              irmao->cor = no->pai->cor;
+              no->pai->cor = Preto;
+              irmao->esquerda->cor = Preto;
+              rotacionarDireita(arvore, no->pai);
+              no = arvore->raiz; // Para sair do loop
             }
         }
     }

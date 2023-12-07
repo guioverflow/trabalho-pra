@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 enum coloracao { Vermelho, Preto };
 typedef enum coloracao Cor;
 
@@ -15,21 +12,32 @@ typedef struct NoRB {
 typedef struct ArvoreRB {
     struct NoRB* raiz;
     struct NoRB* nulo; 
+    struct ContadorRB* contadorRB;
 } ArvoreRB;
 
-ArvoreRB* criar();
-int vazia(ArvoreRB* ArvoreRB);
+// Estrutura criada para armazenar as contabilidades
+typedef struct ContadorRB {
+    unsigned long int operacoes;
+} ContadorRB;
+
+ArvoreRB* criarRB();
+int vaziaRB(ArvoreRB* ArvoreRB);
 
 NoRB* criarNoRB(ArvoreRB* ArvoreRB, NoRB* pai, int valor);
 NoRB* adicionarNoRB(ArvoreRB* ArvoreRB, NoRB* NoRB, int valor);
-NoRB* adicionar(ArvoreRB* ArvoreRB, int valor);
-NoRB* localizar(ArvoreRB* ArvoreRB, int valor);
+NoRB* adicionarRB(ArvoreRB* ArvoreRB, int valor);
+NoRB* localizarRB(ArvoreRB* ArvoreRB, int valor);
 
-void percorrerProfundidadeINoRBrder(ArvoreRB* ArvoreRB, NoRB* NoRB, void (*callback)(int));
-void percorrerProfundidadePreOrder(ArvoreRB* ArvoreRB, NoRB* NoRB, void (*callback)(int));
-void percorrerProfundidadePosOrder(ArvoreRB* ArvoreRB, NoRB* NoRB, void (callback)(int));
+void percorrerProfundidadeInOrderRB(ArvoreRB* ArvoreRB, NoRB* NoRB, void (*callback)(int));
+void percorrerProfundidadePreOrderRB(ArvoreRB* ArvoreRB, NoRB* NoRB, void (*callback)(int));
+void percorrerProfundidadePosOrderRB(ArvoreRB* ArvoreRB, NoRB* NoRB, void (callback)(int));
 
-void visitar(int valor);
-void balancear(ArvoreRB* ArvoreRB, NoRB* NoRB);
-void rotacionarEsquerda(ArvoreRB* ArvoreRB, NoRB* NoRB);
-void rotacionarDireita(ArvoreRB* ArvoreRB, NoRB* NoRB);
+void visitarRB(int valor);
+void balancearRB(ArvoreRB* ArvoreRB, NoRB* NoRB);
+void rotacionarEsquerdaRB(ArvoreRB* ArvoreRB, NoRB* NoRB);
+void rotacionarDireitaRB(ArvoreRB* ArvoreRB, NoRB* NoRB);
+
+void removerRB(ArvoreRB* arvore, int valor);
+void balancearRemocaoRB(ArvoreRB* arvore, NoRB* no);
+void trocarNosRB(ArvoreRB* arvore, NoRB* no1, NoRB* no2);
+NoRB* encontrarMinimoRB(ArvoreRB* arvore, NoRB* no);

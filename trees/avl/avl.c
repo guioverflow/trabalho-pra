@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "avl.h"
 
 unsigned long int contadorAVL = 0;
@@ -39,7 +40,7 @@ NoAVL* criarNoAVL(int valor) {
     return no;
 }
 
-NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
+NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor) {
     // contadorAVL->operacoes += 1;
 
     contadorAVL++;   // CONTAGEM
@@ -53,7 +54,7 @@ NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 				
             return novo;
         } else {
-            return adicionarNoAVLWithCount(no->direita, valor, contadorAVL);
+            return adicionarNoAVLWithCount(no->direita, valor);
         }
     } else {
         // contadorAVL->operacoes += 1;
@@ -65,12 +66,12 @@ NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL) {
 			
             return novo;
         } else {
-            return adicionarNoAVLWithCount(no->esquerda, valor, contadorAVL);
+            return adicionarNoAVLWithCount(no->esquerda, valor);
         }
     }
 }
 
-int inserirNoAVL(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
+int inserirNoAVL(ArvoreAVL* arvore, int valor/** contadorAVL*/) {
     // contadorAVL->operacoes += 1;
 
     contadorAVL++;  //CONTAGEM
@@ -81,19 +82,19 @@ int inserirNoAVL(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL) {
         // return contadorAVL->operacoes;
     }
     
-    NoAVL* no = adicionarNoAVLWithCount(arvore->raiz, valor, contadorAVL);
-    balanceamentoAVLWithCount(arvore, no, contadorAVL);
+    NoAVL* no = adicionarNoAVLWithCount(arvore->raiz, valor);
+    balanceamentoAVLWithCount(arvore, no);
     // return contadorAVL->operacoes;
 }
 
-void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL) {
+void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no) {
     // contadorAVL->operacoes += 1;
 
     contadorAVL++;   // CONTAGEM
     while (no != NULL) {
-        contadorAVL->operacoes += 1;
+        // contadorAVL->operacoes += 1;
 
-        int fator = fbAVL(no, contadorAVL);
+        int fator = fbAVL(no);
 
         // contadorAVL->operacoes += 2;
         if (fator > 1) { //arvore mais profunda a esquerda
@@ -103,10 +104,10 @@ void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL
             //rotacao a direita
             // contadorAVL->operacoes += 1;
             contadorAVL++;   // CONTAGEM
-            if (fbAVL(no->esquerda, contadorAVL) > 0) {
-                rsdAVL(a, no, contadorAVL);
+            if (fbAVL(no->esquerda) > 0) {
+                rsdAVL(a, no);
             } else {
-                rddAVL(a, no, contadorAVL);
+                rddAVL(a, no);
             }
         } else if (fator < -1) {
             contadorAVL += 2;   // CONTAGEM
@@ -114,10 +115,10 @@ void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL
             //rotacao a esquerda
             // contadorAVL->operacoes += 1;
             contadorAVL++;   // CONTAGEM
-            if (fbAVL(no->direita, contadorAVL) < 0) {
-                rseAVL(a, no, contadorAVL);
+            if (fbAVL(no->direita) < 0) {
+                rseAVL(a, no);
             } else {
-                rdeAVL(a, no, contadorAVL);
+                rdeAVL(a, no);
             }
         }
         // contadorAVL->operacoes -= 2;
@@ -129,10 +130,10 @@ void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL
 
 // implementar contador;
 NoAVL* encontrarMinimo(NoAVL* no) {
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     while (no->esquerda != NULL) {
         no = no->esquerda;
-        contadorAVL++;   // CONTAGEM
+        // contadorAVL++;   // CONTAGEM
     }
     return no;
 }
@@ -180,13 +181,13 @@ NoAVL *removeNoAVL(NoAVL *no, int valor) {
 
 // implementar contador
 NoAVL* remover(ArvoreAVL* arvore, int valor){
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     if (arvore == NULL || arvore->raiz == NULL) {
         return NULL;
     }
-    NoAVL* noParaBalancear = removeNoAVL(arvore->raiz, valor/* , contadorAVL */);
+    NoAVL* noParaBalancear = removeNoAVL(arvore->raiz, valor/*  */);
 
-    balanceamentoAVLWithCount(arvore, noParaBalancear, contadorAVL);
+    balanceamentoAVLWithCount(arvore, noParaBalancear);
     return noParaBalancear;
 }
 
@@ -224,18 +225,18 @@ void visitarAVL(int valor){
 }
 
 // É utilizado
-int alturaAVL(NoAVL* no, ContadorAVL* contadorAVL){
+int alturaAVL(NoAVL* no){
     int esquerda = 0,direita = 0;
 
     // contadorAVL->operacoes += 1;
     contadorAVL++;   // CONTAGEM
     if (no->esquerda != NULL) {
-        esquerda = alturaAVL(no->esquerda, contadorAVL) + 1;
+        esquerda = alturaAVL(no->esquerda) + 1;
     }
     contadorAVL++;   // CONTAGEM
     // contadorAVL->operacoes += 1;
     if (no->direita != NULL) {
-        direita = alturaAVL(no->direita, contadorAVL) + 1;
+        direita = alturaAVL(no->direita) + 1;
     }
     
     contadorAVL++;   // CONTAGEM
@@ -243,30 +244,30 @@ int alturaAVL(NoAVL* no, ContadorAVL* contadorAVL){
 }
 
 // É utilizado
-int fbAVL(NoAVL* no, ContadorAVL* contadorAVL) {
+int fbAVL(NoAVL* no) {
     int esquerda = 0,direita = 0;
   
     // contadorAVL->operacoes += 1;
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     if (no->esquerda != NULL) {
-        esquerda = alturaAVL(no->esquerda, contadorAVL) + 1;
+        esquerda = alturaAVL(no->esquerda) + 1;
     }
 
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     // contadorAVL->operacoes += 1;
     if (no->direita != NULL) {
-        direita = alturaAVL(no->direita, contadorAVL) + 1;
+        direita = alturaAVL(no->direita) + 1;
     }
   
     return esquerda - direita;
 }
 
-NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no) {
     NoAVL* pai = no->pai;
     NoAVL* direita = no->direita;
 
     // contadorAVL->operacoes += 1;
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     if (direita->esquerda != NULL) {
         direita->esquerda->pai = no;
     } 
@@ -278,12 +279,12 @@ NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     direita->pai = pai;
 
     // contadorAVL->operacoes += 1;
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     if (pai == NULL) {
         arvore->raiz = direita;
     } else {
         // contadorAVL->operacoes += 1;
-        contadorAVL++;   // CONTAGEM
+        // contadorAVL++;   // CONTAGEM
         if (pai->esquerda == no) {
             pai->esquerda = direita;
         } else {
@@ -294,12 +295,12 @@ NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     return direita;
 }
 
-NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
+NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no) {
     NoAVL* pai = no->pai;
     NoAVL* esquerda = no->esquerda;
 
     // contadorAVL->operacoes += 1;
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     if (esquerda->direita != NULL) {
         esquerda->direita->pai = no;
     } 
@@ -310,13 +311,13 @@ NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     esquerda->direita = no;
     esquerda->pai = pai;
 
-    contadorAVL++;   // CONTAGEM
+    // contadorAVL++;   // CONTAGEM
     // contadorAVL->operacoes += 1;
     if (pai == NULL) {
         arvore->raiz = esquerda;
     } else {
         // contadorAVL->operacoes += 1;
-        contadorAVL++;   // CONTAGEM
+        // contadorAVL++;   // CONTAGEM
         if (pai->esquerda == no) {
             pai->esquerda = esquerda;
         } else {
@@ -327,12 +328,118 @@ NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
     return esquerda;
 }
 
-NoAVL* rdeAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
-    no->direita = rsdAVL(arvore, no->direita, contadorAVL);
-    return rseAVL(arvore, no, contadorAVL);
+NoAVL* rdeAVL(ArvoreAVL* arvore, NoAVL* no) {
+    no->direita = rsdAVL(arvore, no->direita);
+    return rseAVL(arvore, no);
 }
 
-NoAVL* rddAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL) {
-    no->esquerda = rseAVL(arvore, no->esquerda, contadorAVL);
-    return rsdAVL(arvore, no, contadorAVL);
+NoAVL* rddAVL(ArvoreAVL* arvore, NoAVL* no) {
+    no->esquerda = rseAVL(arvore, no->esquerda);
+    return rsdAVL(arvore, no);
+}
+
+#define QTD_ARVORES 10
+#define QTD_ITERACOES 100
+
+int main() {
+
+    // Seed random de acordo com o tempo
+    unsigned int seed = (unsigned int)time(NULL);
+    srand(seed);
+
+    ArvoreAVL* RB[QTD_ARVORES];
+
+
+    unsigned long int resultados[QTD_ARVORES][QTD_ITERACOES];
+    unsigned long int valores[QTD_ARVORES][QTD_ITERACOES];
+
+    int tmp;
+    unsigned long int anteriorAVL;
+
+    // ARVORE RB - INSERÇÃO
+    for (int i = 0; i < QTD_ARVORES; i++) {
+
+        contadorAVL = 0;
+        RB[i] = criarAVL();
+
+        for (int j = 0; j < QTD_ITERACOES; j++) {
+            tmp = rand() % 1000 + 1;
+            valores[i][j] = tmp;
+            anteriorAVL = contadorAVL;
+            inserirNoAVL(RB[i], tmp);
+            resultados[i][j] = contadorAVL - anteriorAVL; // CONTADOR
+        }
+    }
+
+    unsigned long int media[QTD_ITERACOES];
+    unsigned long int aux;
+
+    // cuidar com a troca de i e j
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        aux = 0;
+        for (int j = 0; j < QTD_ARVORES; j++) {
+            aux += resultados[j][i];
+        }
+
+        media[i] = (aux / QTD_ARVORES);
+    }
+
+    printf("\n\n\n\nPASSOU\n\n\n\n\n");
+
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        printf("%i;", media[i]);
+    }
+
+    printf("\n\n\n\nREMOVER\n\n\n\n\n");
+
+    //REMOVER
+    int temp;
+    int randomIndex;
+
+    for (int j = 0; j < QTD_ARVORES; j++) {     // fill array
+       
+        for (int i = 0; i < QTD_ITERACOES; i++) {    // shuffle array
+            temp = valores[j][i];
+            randomIndex = rand() % QTD_ITERACOES;
+            valores[j][i] = valores[j][randomIndex];
+            valores[j][randomIndex] = temp;
+        }
+    }
+    anteriorAVL = 0;
+
+    printf("opa");
+    for (int i = 0; i < QTD_ARVORES; i++) {
+
+        contadorAVL = 0;
+
+        for (int j = 0; j < QTD_ITERACOES; j++) {
+            anteriorAVL = contadorAVL;
+
+            //printf("%i %i %i\n", i, j, valores[i][j]);
+            remover(RB[i], valores[i][j]);
+            printf("%i %i %i %i %i\n", i, j, valores[i][j], contadorAVL, contadorAVL - anteriorAVL);
+            resultados[i][j] = contadorAVL - anteriorAVL;
+        }
+
+        for (int i = 0; i < QTD_ITERACOES; i++) {
+            printf("%i;", resultados[0][i]);
+        }
+    }
+
+    // cuidar com a troca de i e j
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        aux = 0;
+        for (int j = 0; j < QTD_ARVORES; j++) {
+            aux += resultados[j][i];
+        }
+
+        media[i] = aux / QTD_ARVORES;
+    }
+
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        printf("%i;", media[i]);
+    }
+
+    // ARVORE RB - REMOÇÃO
+    
 }

@@ -17,25 +17,21 @@ typedef struct ContadorAVL {
 } ContadorAVL;
 
 ArvoreAVL* criarAVL();
-int vazia(ArvoreAVL* arvore);
+int vaziaAVL(ArvoreAVL* arvore);
 NoAVL* criarNoAVL(int valor);
-// NoAVL* adicionarNoAVL(NoAVL* NoAVL, int valor);
-NoAVL* adicionarNoAVLWithCount(NoAVL* no, int valor, ContadorAVL* contadorAVL);
-// NoAVL* adicionar(ArvoreAVL* arvore, int valor);
-// int adicionarWithCount(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL);
-// void balanceamento(ArvoreAVL* a, NoAVL* NoAVL);
-void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no, ContadorAVL* contadorAVL);
-NoAVL* encontrarMinimo(NoAVL* no);
-NoAVL *removeNoAVL(NoAVL *no, int valor);
-NoAVL* remover(ArvoreAVL* arvore, int valor);
+NoAVL* adicionarNoAVL(NoAVL* no, int valor);
+int adicionarAVL(ArvoreAVL* arvore, int valor);
+void balanceamentoAVLWithCount(ArvoreAVL* a, NoAVL* no);
+NoAVL* encontrarMinimoAVL(NoAVL* no);
+NoAVL* removeNoAVL(NoAVL *no, int valor);
+NoAVL* removerAVL(ArvoreAVL* arvore, int valor);
 NoAVL* localizarAVL(NoAVL* NoAVL, int valor);
 void percorrerAVL(NoAVL* NoAVL, void (*callback)(int));
 void visitarAVL(int valor);
-int alturaAVL(NoAVL* no, ContadorAVL* contadorAVL);
-int fbAVL(NoAVL* no, ContadorAVL* contadorAVL);
-int inserirNoAVL(ArvoreAVL* arvore, int valor, ContadorAVL* contadorAVL)
+int alturaAVL(NoAVL* no);
+int fbAVL(NoAVL* no);
 
-NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL);
-NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL);
-NoAVL* rdeAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL);
-NoAVL* rddAVL(ArvoreAVL* arvore, NoAVL* no, ContadorAVL* contadorAVL);
+NoAVL* rseAVL(ArvoreAVL* arvore, NoAVL* no);
+NoAVL* rsdAVL(ArvoreAVL* arvore, NoAVL* no);
+NoAVL* rdeAVL(ArvoreAVL* arvore, NoAVL* no);
+NoAVL* rddAVL(ArvoreAVL* arvore, NoAVL* no);

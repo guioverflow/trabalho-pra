@@ -1,8 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "redblack.h"
 
 unsigned long int contadorRB = 0;
+unsigned long int contadorRBTeste = 0;
+unsigned long int contadorRBSearch = 0;
 
 ArvoreRB* criarRB() {
     ArvoreRB *arvore = malloc(sizeof(ArvoreRB));
@@ -34,8 +37,11 @@ NoRB* criarNoRB(ArvoreRB* arvore, NoRB* pai, int valor) {
 
 NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
     contadorRB++;   // CONTAGEM
+    contadorRBTeste++;
+
     if (valor > no->valor) {
         contadorRB++;   // CONTAGEM
+        
         if (no->direita == arvore->nulo) {
             no->direita = criarNoRB(arvore, no, valor);     
             no->direita->cor = Vermelho;       
@@ -47,7 +53,7 @@ NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
     } else {
         contadorRB++;   // CONTAGEM
         if (no->esquerda == arvore->nulo) {
-            no->esquerda = criarNo(arvore, no, valor);
+            no->esquerda = criarNoRB(arvore, no, valor);
             no->esquerda->cor = Vermelho;
             
             return no->esquerda;
@@ -60,6 +66,7 @@ NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
 NoRB* adicionarRB(ArvoreRB* arvore, int valor) {
     // contadorRB->operacoes += 1;
     contadorRB += 1;    // CONTAGEM
+    contadorRBTeste++;
     if (vaziaRB(arvore)) {
         arvore->raiz = criarNoRB(arvore, arvore->nulo, valor);
         arvore->raiz->cor = Preto;
@@ -80,13 +87,16 @@ NoRB* localizarRB(ArvoreRB* arvore, int valor) {
 
         contadorRB++;   // CONTAGEM
         while (no != arvore->nulo) {
+            contadorRBSearch++;
             contadorRB++;   // CONTAGEM
+            
             if (no->valor == valor) {
                 return no;
             } else {
                 no = valor < no->valor ? no->esquerda : no->direita;
             }
             contadorRB++;   // CONTAGEM
+            // contadorRBTeste++;
         }
     }
 
@@ -126,6 +136,7 @@ void visitarRB(int valor){
 void balancearRB(ArvoreRB* arvore, NoRB* no) {
     contadorRB++;   // CONTAGEM
     while (no->pai->cor == Vermelho) {
+        // contadorRBTeste++;
         contadorRB++;   // CONTAGEM
         if (no->pai == no->pai->pai->esquerda) {
             NoRB *tio = no->pai->pai->direita;
@@ -273,73 +284,6 @@ void trocarNosRB(ArvoreRB* arvore, NoRB* no1, NoRB* no2) {
     no2->pai = no1->pai;
 }
 
-
-void balancearRemocaoRB(ArvoreRB* arvore, NoRB* no) {
-    contadorRB++;   // CONTAGEM
-    while (no != arvore->raiz && no->cor == Preto) {
-        contadorRB++;   // CONTAGEM
-        if (no == no->pai->esquerda) {
-            NoRB* irmao = no->pai->direita;
-
-            if (irmao->cor == Vermelho) {
-                contadorRB++;   // CONTAGEM
-                irmao->cor = Preto;
-                no->pai->cor = Vermelho;
-                rotacionarEsquerdaRB(arvore, no->pai);
-                irmao = no->pai->direita;
-            }else if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
-                contadorRB += 2;   // CONTAGEM
-                irmao->cor = Vermelho;
-                no = no->pai;
-            } else if (irmao->direita->cor == Preto) {
-                contadorRB += 3;   // CONTAGEMS
-                irmao->esquerda->cor = Preto;
-                irmao->cor = Vermelho;
-                rotacionarDireitaRB(arvore, irmao);
-                irmao = no->pai->direita;
-            }else{
-                contadorRB += 3;   // CONTAGEM
-                irmao->cor = no->pai->cor;
-                no->pai->cor = Preto;
-                irmao->direita->cor = Preto;
-                rotacionarEsquerdaRB(arvore, no->pai);
-                no = arvore->raiz; // Para sair do loop
-            }
-        } else {
-            // Simétrico ao caso acima (esquerda e direita trocados)
-            NoRB* irmao = no->pai->esquerda;
-
-            if (irmao->cor == Vermelho) {
-                contadorRB++;   // CONTAGEM
-                irmao->cor = Preto;
-                no->pai->cor = Vermelho;
-                rotacionarDireitaRB(arvore, no->pai);
-                irmao = no->pai->esquerda;
-            }else if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
-                contadorRB += 2;   // CONTAGEM
-                irmao->cor = Vermelho;
-                no = no->pai;
-            } else if (irmao->esquerda->cor == Preto) {
-                contadorRB += 3;   // CONTAGEM
-                irmao->direita->cor = Preto;
-                irmao->cor = Vermelho;
-                rotacionarEsquerdaRB(arvore, irmao);
-                irmao = no->pai->esquerda;
-            } else{
-                contadorRB += 3;   // CONTAGEM
-                irmao->cor = no->pai->cor;
-                no->pai->cor = Preto;
-                irmao->esquerda->cor = Preto;
-                rotacionarDireitaRB(arvore, no->pai);
-                no = arvore->raiz; // Para sair do loop
-            }
-        }
-        contadorRB++;   // CONTAGEM
-    }
-
-    no->cor = Preto;
-}
-
 void removerRB(ArvoreRB* arvore, int valor) {
     NoRB* no = localizarRB(arvore, valor);
 
@@ -349,10 +293,11 @@ void removerRB(ArvoreRB* arvore, int valor) {
         return;
     }
 
+
     NoRB* noRemover = no;
     Cor corOriginal = noRemover->cor;
     NoRB* noSubstituto;
-
+    
     if (no->esquerda == arvore->nulo) {
         contadorRB++;   // CONTAGEM
         noSubstituto = no->direita;
@@ -388,26 +333,113 @@ void removerRB(ArvoreRB* arvore, int valor) {
     if (corOriginal == Preto) {
         // Rebalancear a árvore após a remoção
         contadorRB++;   // CONTAGEM
-        if (noSubstituto != arvore->nulo) {
-            balancearRemocaoRB(arvore, noSubstituto);
-        }
+        if (noSubstituto != arvore->nulo)
+            balancearRB(arvore, noSubstituto);
     }
 }
 
+#define QTD_ARVORES 10
+#define QTD_ITERACOES 100
 
-/* int main() {
-    Arvore* a = criar();
+int main() {
 
-    adicionar(a,7);
-    adicionar(a,6);
-    adicionar(a,5);
-    adicionar(a,4);
-    adicionar(a,3);
-    adicionar(a,2);
-    adicionar(a,1);
+    // Seed random de acordo com o tempo
+    unsigned int seed = (unsigned int)time(NULL);
+    srand(seed);
 
-    printf("In-order: ");
-    percorrerProfundidadeInOrder(a, a->raiz,visitar);
-    printf("\n");
-} */
+    ArvoreRB* RB[QTD_ARVORES];
 
+
+    unsigned long int resultados[QTD_ARVORES][QTD_ITERACOES];
+    unsigned long int valores[QTD_ARVORES][QTD_ITERACOES];
+
+    int tmp;
+    unsigned long int anteriorRB;
+
+    // ARVORE RB - INSERÇÃO
+    for (int i = 0; i < QTD_ARVORES; i++) {
+
+        contadorRB = 0;
+        contadorRBTeste = 0;
+        contadorRBSearch = 0;
+        RB[i] = criarRB();
+
+        for (int j = 0; j < QTD_ITERACOES; j++) {
+            tmp = rand() % 1000 + 1;
+            valores[i][j] = tmp;
+            anteriorRB = contadorRB;
+            adicionarRB(RB[i], tmp);
+            //localizarRB(RB[i], tmp);
+            //printf("%i;", contadorRB - anteriorRB);
+            resultados[i][j] = contadorRB - anteriorRB; // CONTADOR
+        }
+    }
+
+    unsigned long int media[QTD_ITERACOES];
+    unsigned long int aux;
+
+    // cuidar com a troca de i e j
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        aux = 0;
+        for (int j = 0; j < QTD_ARVORES; j++) {
+            aux += resultados[j][i];
+        }
+
+        media[i] = (aux / QTD_ARVORES);
+    }
+
+    printf("\n\n\n\nPASSOU\n\n\n\n\n");
+
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        printf("%i;", media[i]);
+    }
+
+    printf("\n\n\n\nREMOVER\n\n\n\n\n");
+
+    //REMOVER
+    int temp;
+    int randomIndex;
+
+    for (int j = 0; j < QTD_ARVORES; j++) {     // fill array
+       
+        for (int i = 0; i < QTD_ITERACOES; i++) {    // shuffle array
+            temp = valores[j][i];
+            randomIndex = rand() % QTD_ITERACOES;
+            valores[j][i] = valores[j][randomIndex];
+            valores[j][randomIndex] = temp;
+        }
+    }
+    anteriorRB = 0;
+
+    printf("opa");
+    for (int i = 0; i < QTD_ARVORES; i++) {
+
+        contadorRB = 0;
+
+        for (int j = 0; j < QTD_ITERACOES; j++) {
+            anteriorRB = contadorRB;
+
+            //printf("%i %i %i\n", i, j, valores[i][j]);
+            removerRB(RB[i], valores[i][j]);
+            printf("%i %i %i %i %i\n", i, j, valores[i][j], contadorRB, contadorRB - anteriorRB);
+            resultados[i][j] = contadorRB - anteriorRB;
+        }
+    }
+
+    // cuidar com a troca de i e j
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        aux = 0;
+        for (int j = 0; j < QTD_ARVORES; j++) {
+            aux += resultados[j][i];
+        }
+
+        media[i] = aux / QTD_ARVORES;
+    }
+
+    for (int i = 0; i < QTD_ITERACOES; i++) {
+        printf("%i;", media[i]);
+    }
+
+    // ARVORE RB - REMOÇÃO
+    
+}

@@ -2,41 +2,17 @@
 #include <stdio.h>
 #include "redblack.h"
 
-// enum coloracao { Vermelho, Preto };
-// typedef enum coloracao Cor;
-
-// typedef struct no {
-//     struct no* pai;
-//     struct no* esquerda;
-//     struct no* direita;
-//     Cor cor;
-//     int valor;
-// } No;
-
-// typedef struct arvore {
-//     struct no* raiz;
-//     struct no* nulo; 
-// } Arvore;
-
-// No* criarNo(Arvore*, No*, int);
-// void balancear(Arvore*, No*);
-// void rotacionarEsquerda(Arvore*, No*);
-// void rotacionarDireita(Arvore*, No*);
-
-// ArvoreR* criar();
-// int vazia(Arvore*);
-// No* adicionar(Arvore*, int);
-// No* localizar(Arvore* arvore, int valor);
+unsigned long int contadorRB = 0;
 
 ArvoreRB* criarRB() {
     ArvoreRB *arvore = malloc(sizeof(ArvoreRB));
     arvore->nulo = NULL;
     arvore->raiz = NULL;
 
-    arvore->nulo = criarNo(arvore, NULL, 0);
+    arvore->nulo = criarNoRB(arvore, NULL, 0);
     arvore->nulo->cor = Preto;
 
-    arvore->contadorRB->operacoes = 0;
+    // arvore->contadorRB->operacoes = 0;
 
     return arvore;
 }
@@ -57,7 +33,9 @@ NoRB* criarNoRB(ArvoreRB* arvore, NoRB* pai, int valor) {
 }
 
 NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
+    contadorRB++;   // CONTAGEM
     if (valor > no->valor) {
+        contadorRB++;   // CONTAGEM
         if (no->direita == arvore->nulo) {
             no->direita = criarNoRB(arvore, no, valor);     
             no->direita->cor = Vermelho;       
@@ -67,6 +45,7 @@ NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
             return adicionarNoRB(arvore, no->direita, valor);
         }
     } else {
+        contadorRB++;   // CONTAGEM
         if (no->esquerda == arvore->nulo) {
             no->esquerda = criarNo(arvore, no, valor);
             no->esquerda->cor = Vermelho;
@@ -79,7 +58,9 @@ NoRB* adicionarNoRB(ArvoreRB* arvore, NoRB* no, int valor) {
 }
 
 NoRB* adicionarRB(ArvoreRB* arvore, int valor) {
-    if (vazia(arvore)) {
+    // contadorRB->operacoes += 1;
+    contadorRB += 1;    // CONTAGEM
+    if (vaziaRB(arvore)) {
         arvore->raiz = criarNoRB(arvore, arvore->nulo, valor);
         arvore->raiz->cor = Preto;
         	
@@ -93,15 +74,19 @@ NoRB* adicionarRB(ArvoreRB* arvore, int valor) {
 }
 
 NoRB* localizarRB(ArvoreRB* arvore, int valor) {
+    contadorRB++;   // CONTAGEM
     if (!vaziaRB(arvore)) {
         NoRB* no = arvore->raiz;
 
+        contadorRB++;   // CONTAGEM
         while (no != arvore->nulo) {
+            contadorRB++;   // CONTAGEM
             if (no->valor == valor) {
                 return no;
             } else {
                 no = valor < no->valor ? no->esquerda : no->direita;
             }
+            contadorRB++;   // CONTAGEM
         }
     }
 
@@ -139,10 +124,13 @@ void visitarRB(int valor){
 }
 
 void balancearRB(ArvoreRB* arvore, NoRB* no) {
+    contadorRB++;   // CONTAGEM
     while (no->pai->cor == Vermelho) {
+        contadorRB++;   // CONTAGEM
         if (no->pai == no->pai->pai->esquerda) {
             NoRB *tio = no->pai->pai->direita;
             
+            contadorRB++;   // CONTAGEM
             if (tio->cor == Vermelho) {
                 tio->cor = Preto; //Caso 1
                 no->pai->cor = Preto; 
@@ -150,6 +138,7 @@ void balancearRB(ArvoreRB* arvore, NoRB* no) {
                 no->pai->pai->cor = Vermelho; //Caso 1
                 no = no->pai->pai; //Caso 1
             } else {
+                contadorRB++;   // CONTAGEM
                 if (no == no->pai->direita) {
                     no = no->pai; //Caso 2
                     rotacionarEsquerdaRB(arvore, no); //Caso 2
@@ -162,6 +151,7 @@ void balancearRB(ArvoreRB* arvore, NoRB* no) {
         } else {
             NoRB *tio = no->pai->pai->esquerda;
             
+            contadorRB++;   // CONTAGEM
             if (tio->cor == Vermelho) {
                 tio->cor = Preto; //Caso 1
                 no->pai->cor = Preto; 
@@ -169,6 +159,7 @@ void balancearRB(ArvoreRB* arvore, NoRB* no) {
                 no->pai->pai->cor = Vermelho; //Caso 1
                 no = no->pai->pai; //Caso 1
             } else {
+                contadorRB++;   // CONTAGEM
                 if (no == no->pai->esquerda) {
                     no = no->pai; //Caso 2
                     rotacionarDireitaRB(arvore, no); //Caso 2
@@ -179,6 +170,7 @@ void balancearRB(ArvoreRB* arvore, NoRB* no) {
                 }
             }
         }
+        contadorRB++;   // CONTAGEM
     }
     arvore->raiz->cor = Preto; //Conserta possível quebra regra 2
 }
@@ -187,6 +179,7 @@ void rotacionarEsquerdaRB(ArvoreRB* arvore, NoRB* no) {
     NoRB* direita = no->direita;
     no->direita = direita->esquerda; 
 
+    contadorRB++;   // CONTAGEM
     if (direita->esquerda != arvore->nulo) {
         direita->esquerda->pai = no;
     }
@@ -194,10 +187,13 @@ void rotacionarEsquerdaRB(ArvoreRB* arvore, NoRB* no) {
     direita->pai = no->pai;
     
     if (no->pai == arvore->nulo) {
+        contadorRB++;   // CONTAGEM
         arvore->raiz = direita;
     } else if (no == no->pai->esquerda) {
+        contadorRB += 2;   // CONTAGEM
         no->pai->esquerda = direita;
     } else {
+        contadorRB += 2;   // CONTAGEM
         no->pai->direita = direita;
     }
 
@@ -209,6 +205,7 @@ void rotacionarDireitaRB(ArvoreRB* arvore, NoRB* no) {
     NoRB* esquerda = no->esquerda;
     no->esquerda = esquerda->direita;
     
+    contadorRB++;   // CONTAGEM
     if (esquerda->direita != arvore->nulo) {
         esquerda->direita->pai = no;
     }
@@ -216,10 +213,13 @@ void rotacionarDireitaRB(ArvoreRB* arvore, NoRB* no) {
     esquerda->pai = no->pai;
     
     if (no->pai == arvore->nulo) {
+        contadorRB++;   // CONTAGEM
         arvore->raiz = esquerda;
     } else if (no == no->pai->esquerda) {
+        contadorRB += 2;   // CONTAGEM
         no->pai->esquerda = esquerda;
     } else {
+        contadorRB += 2;   // CONTAGEM
         no->pai->direita = esquerda;
     }
     
@@ -252,16 +252,20 @@ void exibirArvoreRubroNegra(ArvoreRB* arvore) {
 
 
 NoRB* encontrarMinimoRB(ArvoreRB* arvore, NoRB* no) {
+    contadorRB++;   // CONTAGEM
     while (no->esquerda != arvore->nulo) {
         no = no->esquerda;
+        contadorRB++;   // CONTAGEM
     }
     return no;
 }
 
 void trocarNosRB(ArvoreRB* arvore, NoRB* no1, NoRB* no2) {
+    contadorRB++;   // CONTAGEM
     if (no1->pai == arvore->nulo) {
         arvore->raiz = no2;
     } else if (no1 == no1->pai->esquerda) {
+        contadorRB += 2;   // CONTAGEM
         no1->pai->esquerda = no2;
     } else {
         no1->pai->direita = no2;
@@ -271,24 +275,30 @@ void trocarNosRB(ArvoreRB* arvore, NoRB* no1, NoRB* no2) {
 
 
 void balancearRemocaoRB(ArvoreRB* arvore, NoRB* no) {
+    contadorRB++;   // CONTAGEM
     while (no != arvore->raiz && no->cor == Preto) {
+        contadorRB++;   // CONTAGEM
         if (no == no->pai->esquerda) {
             NoRB* irmao = no->pai->direita;
 
             if (irmao->cor == Vermelho) {
+                contadorRB++;   // CONTAGEM
                 irmao->cor = Preto;
                 no->pai->cor = Vermelho;
                 rotacionarEsquerdaRB(arvore, no->pai);
                 irmao = no->pai->direita;
             }else if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
+                contadorRB += 2;   // CONTAGEM
                 irmao->cor = Vermelho;
                 no = no->pai;
             } else if (irmao->direita->cor == Preto) {
-                    irmao->esquerda->cor = Preto;
-                    irmao->cor = Vermelho;
-                    rotacionarDireitaRB(arvore, irmao);
-                    irmao = no->pai->direita;
+                contadorRB += 3;   // CONTAGEMS
+                irmao->esquerda->cor = Preto;
+                irmao->cor = Vermelho;
+                rotacionarDireitaRB(arvore, irmao);
+                irmao = no->pai->direita;
             }else{
+                contadorRB += 3;   // CONTAGEM
                 irmao->cor = no->pai->cor;
                 no->pai->cor = Preto;
                 irmao->direita->cor = Preto;
@@ -300,34 +310,40 @@ void balancearRemocaoRB(ArvoreRB* arvore, NoRB* no) {
             NoRB* irmao = no->pai->esquerda;
 
             if (irmao->cor == Vermelho) {
+                contadorRB++;   // CONTAGEM
                 irmao->cor = Preto;
                 no->pai->cor = Vermelho;
                 rotacionarDireitaRB(arvore, no->pai);
                 irmao = no->pai->esquerda;
             }else if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
+                contadorRB += 2;   // CONTAGEM
                 irmao->cor = Vermelho;
                 no = no->pai;
             } else if (irmao->esquerda->cor == Preto) {
-                    irmao->direita->cor = Preto;
-                    irmao->cor = Vermelho;
-                    rotacionarEsquerdaRB(arvore, irmao);
-                    irmao = no->pai->esquerda;
+                contadorRB += 3;   // CONTAGEM
+                irmao->direita->cor = Preto;
+                irmao->cor = Vermelho;
+                rotacionarEsquerdaRB(arvore, irmao);
+                irmao = no->pai->esquerda;
             } else{
-              irmao->cor = no->pai->cor;
-              no->pai->cor = Preto;
-              irmao->esquerda->cor = Preto;
-              rotacionarDireitaRB(arvore, no->pai);
-              no = arvore->raiz; // Para sair do loop
+                contadorRB += 3;   // CONTAGEM
+                irmao->cor = no->pai->cor;
+                no->pai->cor = Preto;
+                irmao->esquerda->cor = Preto;
+                rotacionarDireitaRB(arvore, no->pai);
+                no = arvore->raiz; // Para sair do loop
             }
         }
+        contadorRB++;   // CONTAGEM
     }
 
     no->cor = Preto;
 }
 
 void removerRB(ArvoreRB* arvore, int valor) {
-    NoRB* no = localizar(arvore, valor);
+    NoRB* no = localizarRB(arvore, valor);
 
+    contadorRB++;   // CONTAGEM
     if (no == NULL) {
         printf("Valor não encontrado na árvore.\n");
         return;
@@ -338,16 +354,20 @@ void removerRB(ArvoreRB* arvore, int valor) {
     NoRB* noSubstituto;
 
     if (no->esquerda == arvore->nulo) {
+        contadorRB++;   // CONTAGEM
         noSubstituto = no->direita;
         trocarNosRB(arvore, no, no->direita);
     } else if (no->direita == arvore->nulo) {
+        contadorRB += 2;   // CONTAGEM
         noSubstituto = no->esquerda;
         trocarNosRB(arvore, no, no->esquerda);
     } else {
+        contadorRB += 2;   // CONTAGEM
         noRemover = encontrarMinimoRB(arvore, no->direita);
         corOriginal = noRemover->cor;
         noSubstituto = noRemover->direita;
 
+        contadorRB++;   // CONTAGEM
         if (noRemover->pai == no) {
             noSubstituto->pai = noRemover;
         } else {
@@ -364,16 +384,18 @@ void removerRB(ArvoreRB* arvore, int valor) {
 
     free(no);
 
+    contadorRB++;   // CONTAGEM
     if (corOriginal == Preto) {
         // Rebalancear a árvore após a remoção
+        contadorRB++;   // CONTAGEM
         if (noSubstituto != arvore->nulo) {
             balancearRemocaoRB(arvore, noSubstituto);
         }
     }
 }
 
-/*
-int main() {
+
+/* int main() {
     Arvore* a = criar();
 
     adicionar(a,7);
@@ -387,5 +409,5 @@ int main() {
     printf("In-order: ");
     percorrerProfundidadeInOrder(a, a->raiz,visitar);
     printf("\n");
-}
-*/
+} */
+
